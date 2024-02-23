@@ -11,6 +11,7 @@ export const ListItemStyled = styled.li`
     max-width: 865px;
     padding: 16px;
     box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 
     display: flex;
     flex-direction: column;
@@ -21,6 +22,8 @@ export const ListItemStyled = styled.li`
 export const ListItemControls = styled.div`
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
 
     & > button {

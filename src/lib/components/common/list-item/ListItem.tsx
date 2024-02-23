@@ -1,25 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ListItemControls, ListItemStyled } from './ListItem.styled';
+import React from 'react';
+import { ListItemStyled } from './ListItem.styled';
 
 interface Props {
     label: string;
-    children: React.ReactNode;
+    clickHandler: () => void;
 }
 
-export function ListItem({ label, children }: Props) {
-    const [showDetails, setShowDetails] = useState<boolean>(false);
-
-    const handleClick = () => {
-        if (!showDetails) setShowDetails(true);
-        else setShowDetails(false);
-    };
-
+export function ListItem({ label, clickHandler }: Props) {
     return (
-        <ListItemStyled onClick={handleClick}>
+        <ListItemStyled onClick={clickHandler}>
             <p>{label}</p>
-            {showDetails && <ListItemControls>{children}</ListItemControls>}
         </ListItemStyled>
     );
 }
