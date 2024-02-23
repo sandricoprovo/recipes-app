@@ -4,18 +4,30 @@ import { Main } from '@/lib/components/main/Main';
 import { Header } from '@/lib/components/header/Header';
 import { SearchField } from '@/lib/components/search/SearchField';
 import { Bookmarks } from '@/lib/components/bookmarks/Bookmarks';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { SearchResultsStyled } from '@/lib/components/search/Search.styled';
 import { normalizeRecipe } from '@/lib/utils/normailizeRecipe';
 import { ListItem } from '@/lib/components/common/list-item/ListItem';
 import { fetchRecipes } from '@/lib/data/fetchRecipes';
+import { RecipeInfo } from '@/lib/components/recipeinfo/RecipeInfo';
+import { ApiRecipeHit, Recipe } from '@/lib/types';
 
 export default function Home() {
     const [input, setInput] = useState<string>('');
     const [searchResults, setSearchResults] = useState<ApiRecipeHit[]>([]);
     const [bookmarks, setBookmarks] = useState<Recipe[]>([]);
+    const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const debouncedSearchValue = useDebounce<string>(input);
+
+    const clearSearchResults = () => {
+        if (searchResults.length <= 0) return;
+        setSearchResults([]);
+    };
+
+    const closeRecipeInfoView = () => {
+        setSelectedRecipe(null);
+    };
 
     const addToBookmarks = (recipe: Recipe) => {
         const isAlreadyBookMarked = bookmarks.some((bookmark) => bookmark.url === recipe.url);
@@ -24,11 +36,13 @@ export default function Home() {
         const updatedBookmarks = [...bookmarks, recipe];
         setBookmarks(updatedBookmarks);
         setInput('');
+        clearSearchResults();
+        closeRecipeInfoView();
     };
 
-    const clearSearchResults = () => {
-        if (searchResults.length <= 0) return;
-        setSearchResults([]);
+    const showRecipeDetails = (recipe: Recipe) => {
+        if (!recipe.label) return;
+        setSelectedRecipe(recipe);
     };
 
     useEffect(() => {
@@ -54,21 +68,18 @@ export default function Home() {
             <SearchField searchValue={input} updateSearchValue={setInput}>
                 {searchResults.length > 0 && (
                     <SearchResultsStyled>
-                        {searchResults.map((hit) => {
+                        {searchResults.map((hit, index) => {
                             const normalizedRecipe = normalizeRecipe(hit);
-                            if (!normalizedRecipe.label) return <></>;
+                            if (!normalizedRecipe) return <></>;
 
-                            const { label, url } = normalizedRecipe;
+                            const { label } = normalizedRecipe;
 
                             return (
-                                <ListItem key={label} label={label}>
-                                    <button onClick={() => addToBookmarks({ label, url })}>
-                                        Bookmark
-                                    </button>
-                                    <a href={url} target="_blank" rel="noreferrer noopener">
-                                        Visit
-                                    </a>
-                                </ListItem>
+                                <ListItem
+                                    key={`${label.toLowerCase()}_${index}`}
+                                    label={label}
+                                    clickHandler={() => showRecipeDetails(normalizedRecipe)}
+                                />
                             );
                         })}
                     </SearchResultsStyled>
@@ -77,16 +88,21 @@ export default function Home() {
             <Bookmarks>
                 {bookmarks.length > 0 &&
                     bookmarks.map((bookmark) => {
-                        const { label, url } = bookmark;
+                        const { label } = bookmark;
                         return (
-                            <ListItem key={label} label={label}>
-                                <a href={url} target="_blank" rel="noreferrer noopener">
-                                    Visit
-                                </a>
-                            </ListItem>
+                            <ListItem
+                                key={label}
+                                label={label}
+                                clickHandler={() => showRecipeDetails(bookmark)}
+                            />
                         );
                     })}
             </Bookmarks>
+            <RecipeInfo
+                recipe={selectedRecipe}
+                closeDialog={closeRecipeInfoView}
+                addToBookMarks={addToBookmarks}
+            />
         </Main>
     );
 }

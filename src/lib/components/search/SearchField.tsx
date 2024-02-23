@@ -17,7 +17,7 @@ export function SearchField({ updateSearchValue, children, searchValue }: Props)
 
     return (
         <SearchContainerStyled>
-            <form action="">
+            <form action="" onSubmit={(e) => e.preventDefault()}>
                 <SearchLabelStyled htmlFor="recipe-search">
                     Search For Recipes Here
                     <SearchInputStyled

@@ -1,11 +1,4 @@
-type ApiRecipeHit = {
-    recipe: {
-        label: string;
-        url: string;
-    };
-};
-
-type ApiRecipeResponse = {
+export type ApiRecipeResponse = {
     from: number;
     to: number;
     count: number;
@@ -18,7 +11,32 @@ type ApiRecipeResponse = {
     hits: ApiRecipeHit[];
 };
 
-type Recipe = {
-    label: string;
-    url: string;
+export type ApiRecipeHit = {
+    recipe: {
+        label: string;
+        url: string;
+        images: {
+            THUMBNAIL: {
+                url: string;
+                width: number;
+                height: number;
+            };
+        };
+        source: string;
+        yield: number;
+        dietLabels: string[];
+        totalTime: number;
+        cuisineType: string[];
+        mealType: string[];
+        calories: number;
+    };
+};
+
+export type Recipe = Omit<ApiRecipeHit['recipe'], 'images' | 'yield'> & {
+    thumbnail: {
+        url: string;
+        width: number;
+        height: number;
+    };
+    amount: number;
 };
