@@ -26,10 +26,10 @@ export default function Home() {
         setInput('');
     };
 
-    const clearSearchResults = useCallback(() => {
+    const clearSearchResults = () => {
         if (searchResults.length <= 0) return;
         setSearchResults([]);
-    }, [searchResults]);
+    };
 
     useEffect(() => {
         if (!debouncedSearchValue) {
@@ -46,7 +46,7 @@ export default function Home() {
                 console.log(e);
             }
         })();
-    }, [debouncedSearchValue, clearSearchResults]);
+    }, [debouncedSearchValue]);
 
     return (
         <Main>
